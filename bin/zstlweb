@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# 检查环境变量是否设置
+if [ ! -n "$ZSTLWEB_HOME" ]; then 
+    echo runall failed  
+    echo with ZSTLWEB_HOME is not set
+    exit 1;
+fi 
+
+memcached=${ZSTLWEB_HOME}/script/memcached.pid
+hypnotoad=${ZSTLWEB_HOME}/script/hypnotoad.pid
+
+case $@ in
+start) 
+    if [ -f "$memcached" ]; then
+        $0 status
+        exit 0;
+    fi
+    if [ -f "$hypnotoad" ]; then
+        $0 status
+        exit 0;
+    fi
+    # 启动memcached
+    memcached -p $MEM_PORT -m 64m -P $ZSTLWEB_HOME/script/memcached.pid -d
+    # 用hypnotoad启动zstlweb
+    hypnotoad $ZSTLWEB_HOME/script/zstlweb
+    $0 status
+    exit 0
+    ;;
+stop)
+    if [ -f "$memcached" ]; then
+        kill `cat $memcached`
+        rm $memcached
+        echo memcached stoped
+    fi
+    if [ -f "$hypnotoad" ]; then
+        kill `cat $hypnotoad`
+        echo zstlweb stoped
+    fi
+    exit 0
+    ;;
+status)
+    if [ -f "$memcached" ]; then
+        echo "memcached run at "`cat $memcached`
+    fi
+    if [ -f "$hypnotoad" ]; then
+        echo "zstlweb run at "`cat $hypnotoad`
+    fi
+    exit 0
+    ;;
+archive)
+    cd $ZSTLWEB_HOME
+    version=zstlweb-`git describe master`
+    temp=${version}.tar
+    git archive master --format tar -o $ZSTLWEB_HOME/tar/${temp}
+    cd $ZSTLWEB_HOME/tar
+    tar -uf ${temp} ../public -h
+    #gzip -f ${temp}> ${temp}.gz
+    echo archive file succeed ${temp}
+    exit 0
+    ;;
+restart)
+    $0 stop
+    $0 start
+    exit 0
+    ;;
+*)
+    echo "Usage: $0 {start|stop|restart|status|archive}"
+    exit 0
+esac
+
+
