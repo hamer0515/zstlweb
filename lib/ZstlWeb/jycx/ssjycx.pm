@@ -121,14 +121,7 @@ FROM
         FROM
             txn_log_cardsv
         WHERE
-            mid IN
-            (
-                SELECT
-                    mid
-                FROM
-                    mcht_inf
-                WHERE
-                    $condition)"
+            $condition)"
 		  ;
 	}
 
