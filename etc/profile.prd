@@ -1,0 +1,24 @@
+export ZSTLWEB_HOME=$HOME/workspace/zstlweb
+export PATH=$ZSTLWEB_HOME/bin:$ZSTLWEB_HOME/libexec:$PATH
+
+alias cdlb='cd $ZSTLWEB_HOME/lib';
+alias cdb='cd $ZSTLWEB_HOME/bin';
+alias cdt='cd $ZSTLWEB_HOME/t';
+alias cdc='cd $ZSTLWEB_HOME/conf';
+alias cde='cd $ZSTLWEB_HOME/etc';
+alias cdl='cd $ZSTLWEB_HOME/log';
+alias cdh='cd $ZSTLWEB_HOME';
+
+export DB_NAME=zdb_prd
+export DB_USER=db2inst
+export DB_PASS=db2inst
+export DB_SCHEMA=db2inst
+
+export LISTEN_PORT=8080
+export SVC_URL=http://localhost:7676/
+export MGR_URL=http://localhost:9898/
+export MEM_IP=localhost
+export MEM_PORT=11211
+export MEM_SERVER=$MEM_IP:$MEM_PORT
+
+alias dbc='db2 connect to $DB_NAME user $DB_USER using $DB_PASS'
