@@ -12,6 +12,12 @@ sub list {
 	# mid
 	my $mid = $self->param('mid');
 
+	# cno
+	my $cno = $self->param('cno');
+
+	# ctype
+	my $ctype = $self->param('ctype');
+
 	#sdate
 	my $sdate_from = $self->param('sdate_from');
 	my $sdate_to   = $self->param('sdate_to');
@@ -24,9 +30,10 @@ sub list {
 	my $sql = '';
 	if ( $itype == 2 ) {
 		$par = {
-			'dtl.p_tech' => $utype,
-			'dtl.mid'    => $mid,
-			'dtl.sdate'  => [
+			'bms_log.cno' => $cno && $self->quote($cno),
+			'dtl.p_tech'  => $utype,
+			'dtl.mid'     => $mid,
+			'dtl.sdate'   => [
 				0,
 				$sdate_from && $self->quote($sdate_from),
 				$sdate_to   && $self->quote($sdate_to)
@@ -35,14 +42,23 @@ sub list {
 	}
 	else {
 		$par = {
-			'dtl.p_chnl' => $utype,
-			'dtl.mid'    => $mid,
-			'dtl.sdate'  => [
+			'bms_log.cno' => $cno && $self->quote($cno),
+			'dtl.p_chnl'  => $utype,
+			'dtl.mid'     => $mid,
+			'dtl.sdate'   => [
 				0,
 				$sdate_from && $self->quote($sdate_from),
 				$sdate_to   && $self->quote($sdate_to)
 			],
 		};
+	}
+	if ($ctype) {
+		if ( $ctype == 1 ) {
+			$par->{'bms_log.ctype'} = $self->quote($ctype);
+		}
+		else {
+			$par->{'bms_log.ctype'} = [ 0, $self->quote($ctype) ];
+		}
 	}
 	my $p = $self->params($par);
 	$sql =

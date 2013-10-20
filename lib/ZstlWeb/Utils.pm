@@ -108,10 +108,7 @@ sub _decode_ch {
 	my $row  = shift;
 
 	# chinese decode
-	for (
-		qw/name memo text mname/
-	  )
-	{
+	for (qw/name memo text mname/) {
 		$row->{$_} = $self->my_decode( $row->{$_} ) if $row->{$_};
 	}
 }

@@ -12,6 +12,18 @@ sub list {
 	# mid
 	my $mid = $self->param('mid');
 
+	# tid
+	my $tid = $self->param('tid');
+
+	# cno
+	my $cno = $self->param('cno');
+
+	# refnum
+	my $refnum = $self->param('refnum');
+
+	# tsn
+	my $tsn = $self->param('tsn');
+
 	#ptdt
 	my $ptdt_from = $self->param('ptdt_from');
 	my $ptdt_to   = $self->param('ptdt_to');
@@ -21,8 +33,12 @@ sub list {
 	my $itype = $self->session->{itype};
 
 	my $par = {
-		ptdt => $mid,
-		ptdt => [
+		mid    => $mid    && $self->quote($mid),
+		tid    => $tid    && $self->quote($tid),
+		cno    => $cno    && $self->quote($cno),
+		refnum => $refnum && $self->quote($refnum),
+		tsn    => $tsn    && $self->quote($tsn),
+		ptdt   => [
 			0,
 			$ptdt_from && $self->quote($ptdt_from),
 			$ptdt_to   && $self->quote($ptdt_to)
@@ -33,6 +49,10 @@ sub list {
 	my $sql       = '';
 	if ( $itype == 2 ) {
 		$sql = "SELECT
+	rev_flag,
+	mname,
+    refnum,
+    tsn,
     mid,
     tid,
     ptdt,
@@ -44,6 +64,10 @@ sub list {
 FROM
     (
         SELECT
+        	rev_flag,
+        	mname,
+        	refnum,
+        	tsn,
             mid,
             tid,
             ptdt,
@@ -61,11 +85,16 @@ FROM
                 FROM
                     mcht_inf
                 WHERE
-                    tech_id = $utype ) $condition)"
+                    tech_id = $utype ) $condition
+            order by ptdt desc)"
 		  ;
 	}
 	elsif ( $itype == 1 ) {
 		$sql = "SELECT
+	rev_flag,
+	mname,
+    refnum,
+    tsn,
     mid,
     tid,
     ptdt,
@@ -77,6 +106,10 @@ FROM
 FROM
     (
         SELECT
+        	rev_flag,
+        	mname,
+        	refnum,
+        	tsn,
             mid,
             tid,
             ptdt,
@@ -94,12 +127,17 @@ FROM
                 FROM
                     mcht_inf
                 WHERE
-                    chnl_id = $utype ) $condition)"
+                    chnl_id = $utype ) $condition
+            order by ptdt desc)"
 		  ;
 	}
 	elsif ( $itype == 0 ) {
 		$condition =~ s/^ and // if $condition;
 		$sql = "SELECT
+	rev_flag,
+	mname,
+    refnum,
+    tsn,
     mid,
     tid,
     ptdt,
@@ -111,6 +149,10 @@ FROM
 FROM
     (
         SELECT
+       		rev_flag,
+        	mname,
+		    refnum,
+		    tsn,
             mid,
             tid,
             ptdt,
@@ -121,11 +163,10 @@ FROM
         FROM
             txn_log_cardsv
         WHERE
-            $condition)"
+            $condition
+        order by ptdt desc)"
 		  ;
 	}
-
-	warn $sql;
 	my $data = $self->page_data( $sql, $page, $limit );
 	$data->{success} = true;
 	$self->render( json => $data );
