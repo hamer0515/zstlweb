@@ -162,7 +162,6 @@ FROM
        	ON
        		dtl.mid = mcht_inf.mid $condition $excondition)";
 	}
-	warn $sql;
 	my $data = $self->page_data( $sql, $page, $limit );
 	$data->{success} = true;
 	$self->render( json => $data );
@@ -196,11 +195,12 @@ sub detail {
 				    ssn = \'$ssn\'
 				AND tdt = \'$tdt\'";
 	my $data = $self->select($sql)->[0];
+	$data->{tamt} = $self->nf( $data->{tamt} / 100 );
 	for ( 1 .. 5 ) {
+
 		if ( $data->{"p_$_"} ) {
 			$data->{"je_$_"} =
-			  $self->nf( ( $data->{"pft_$_"} - $data->{"lfee_$_"} ) / 100 )
-			  ;
+			  $self->nf( ( $data->{"pft_$_"} - $data->{"lfee_$_"} ) / 100 );
 			$data->{"pft_$_"}  = $self->nf( $data->{"pft_$_"} / 100 );
 			$data->{"lfee_$_"} = $self->nf( $data->{"lfee_$_"} / 100 );
 		}

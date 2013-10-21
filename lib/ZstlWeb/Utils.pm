@@ -111,6 +111,9 @@ sub _decode_ch {
 	for (qw/name memo text mname/) {
 		$row->{$_} = $self->my_decode( $row->{$_} ) if $row->{$_};
 	}
+	
+	$row->{ts_c}       =~ s/\..*$// if $row->{ts_c};
+	$row->{ts_u}       =~ s/\..*$// if $row->{ts_u};
 }
 
 sub _transform {

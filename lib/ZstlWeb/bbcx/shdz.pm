@@ -81,7 +81,6 @@ sub list {
 		join mcht_inf
 		on dtl.mid = mcht_inf.mid
 		) ";
-	warn $sql;
 	my $data = $self->page_data( $sql, $page, $limit );
 	$data->{success} = true;
 	$self->render( json => $data );

@@ -194,6 +194,13 @@ sub set_route {
 	# 交易查询
 	$r->any('/ssjycx/list')
 	  ->to( namespace => 'ZstlWeb::jycx::ssjycx', action => 'list' );
+
+	# 账户管理
+	$r->any('/zhcx/list')
+	  ->to( namespace => 'ZstlWeb::zhgl::zhcx', action => 'list' );
+	$r->any('/zhcx/history')
+	  ->to( namespace => 'ZstlWeb::zhgl::zhcx', action => 'history' )
+	  ;
 }
 
 1;
