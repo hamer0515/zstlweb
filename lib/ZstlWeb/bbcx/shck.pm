@@ -32,7 +32,7 @@ sub list {
 		],
 	};
 	my $excondition = '';
-	if ($mname){
+	if ($mname) {
 		$excondition = "and mcht_inf.mname like \'%$mname%\'";
 	}
 	my $p         = $self->params($par);
@@ -54,17 +54,19 @@ FROM
             clearing_log.mid      AS mid,
             clearing_log.fbatch   AS fbatch,
             clearing_log.amt      AS amt,
-            clearing_batch.cdate  AS cdate,
-            clearing_batch.status AS status
+            clearing_log.status   AS status,
+            clearing_batch.cdate  AS cdate
         FROM
             (
                 SELECT
+                	status,
                     mid,
                     fbatch,
                     SUM(amt) AS amt
                 FROM
                     clearing_log
                 GROUP BY
+                	status,
                     mid,
                     fbatch
                 HAVING
@@ -102,17 +104,19 @@ FROM
             clearing_log.mid      AS mid,
             clearing_log.fbatch   AS fbatch,
             clearing_log.amt      AS amt,
-            clearing_batch.cdate  AS cdate,
-            clearing_batch.status AS status
+            clearing_log.status   AS status,
+            clearing_batch.cdate  AS cdate
         FROM
             (
                 SELECT
+                	status,
                     mid,
                     fbatch,
                     SUM(amt) AS amt
                 FROM
                     clearing_log
                 GROUP BY
+                	status,
                     mid,
                     fbatch
                 HAVING
@@ -150,11 +154,12 @@ FROM
             clearing_log.mid      AS mid,
             clearing_log.fbatch   AS fbatch,
             clearing_log.amt      AS amt,
-            clearing_batch.cdate  AS cdate,
-            clearing_batch.status AS status
+            clearing_log.status   AS status,
+            clearing_batch.cdate  AS cdate
         FROM
             (
                 SELECT
+                    status,
                     mid,
                     fbatch,
                     SUM(amt) AS amt
@@ -162,7 +167,8 @@ FROM
                     clearing_log
                 GROUP BY
                     mid,
-                    fbatch
+                    fbatch,
+                    status
              ) clearing_log
         JOIN
             clearing_batch
