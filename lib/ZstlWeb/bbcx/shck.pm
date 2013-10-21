@@ -12,6 +12,9 @@ sub list {
 	# mid
 	my $mid = $self->param('mid');
 
+	# status
+	my $status = $self->param('status');
+
 	# mname
 	my $mname = $self->param('mname');
 
@@ -24,6 +27,7 @@ sub list {
 	my $itype = $self->session->{itype};
 
 	my $par = {
+		'clearing_log.status'  => $status,
 		'clearing_log.mid'     => $mid,
 		'clearing_batch.cdate' => [
 			0,
