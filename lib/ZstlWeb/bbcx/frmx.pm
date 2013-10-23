@@ -22,7 +22,8 @@ sub list {
 	my $utype = $self->session->{utype};
 	my $itype = $self->session->{itype};
 
-	my $sql = '';
+	my $sql     = '';
+	my $sql_sum = '';
 
 	my $excondition = '';
 	if ($mname) {
@@ -57,14 +58,14 @@ sub list {
 FROM
     (
         SELECT
-            mcht_inf.mname 				AS mname,
-            dtl.mid 					AS mid,
-            dtl.sdate 					AS sdate,
-            dtl.tdt 					AS tdt,
-            dtl.ssn 					AS ssn,
-            dtl.tamt 					AS tamt,
-            dtl.pft_tech 				AS pft,
-            dtl.lfee_tech 				AS lfee,
+            mcht_inf.mname 					AS mname,
+            dtl.mid 						AS mid,
+            dtl.sdate 						AS sdate,
+            dtl.tdt 						AS tdt,
+            dtl.ssn 						AS ssn,
+            dtl.tamt 						AS tamt,
+            dtl.pft_tech 					AS pft,
+            dtl.lfee_tech 					AS lfee,
             dtl.pft_tech - dtl.lfee_tech 	AS je
         FROM
             dtl
@@ -72,6 +73,8 @@ FROM
        		mcht_inf
        	ON
        		dtl.mid = mcht_inf.mid $condition $excondition)";
+		$sql_sum =
+"select sum(tamt) as tamt, sum(pft_tech) as pft, sum(lfee_tech) as lfee from dtl where 1=1 $condition $excondition";
 	}
 
 	# 渠道
@@ -117,6 +120,8 @@ FROM
        		mcht_inf
        	ON
        		dtl.mid = mcht_inf.mid $condition $excondition)";
+		$sql_sum =
+"select sum(tamt) as tamt, sum(pft_chnl) as pft, sum(lfee_chnl) as lfee from dtl where 1=1 $condition $excondition";
 	}
 
 	# 运营
@@ -161,8 +166,12 @@ FROM
        		mcht_inf
        	ON
        		dtl.mid = mcht_inf.mid $condition $excondition)";
+		$sql_sum =
+"select sum(tamt) as tamt, sum(pft_self) as pft, sum(lfee_self) as lfee from dtl where 1=1 $condition $excondition";
 	}
 	my $data = $self->page_data( $sql, $page, $limit );
+	my $sum = $self->select($sql_sum);
+	$data->{data}[0]{sum} = $sum;
 	$data->{success} = true;
 	$self->render( json => $data );
 }

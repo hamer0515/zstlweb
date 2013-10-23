@@ -30,10 +30,12 @@ sub list {
 	my $p         = $self->params($par);
 	my $condition = $p->{condition};
 	$condition =~ s/^ and // if $condition;
-	$condition = 'where ' . $condition if $condition;
+
+	#	$condition = 'where ' . $condition if $condition;
 	$sql = "SELECT
 	ts_u,
     mid,
+    mname,
     r_0,
     r_1,
     rownumber() over() AS rowid
@@ -42,11 +44,15 @@ FROM
         SELECT
          	mcht_acct.ts_u 	AS ts_u,
             mcht_acct.mid 	AS mid,
+            mcht_inf.mname  AS mname,
             mcht_acct.r_0 	AS r_0,
             mcht_acct.r_1 	AS r_1
         FROM
             mcht_acct 
-        $condition)";
+        JOIN 
+        	mcht_inf
+        ON
+        	mcht_inf.mid = mcht_acct.mid $condition)";
 	my $data = $self->page_data( $sql, $page, $limit );
 	$data->{success} = true;
 	$self->render( json => $data );

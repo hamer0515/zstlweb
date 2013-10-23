@@ -12,8 +12,8 @@ sub list {
 	# mid
 	my $mid = $self->param('mid');
 
-	# tid
-	my $tid = $self->param('tid');
+	# ptid
+	my $ptid = $self->param('ptid');
 
 	# cno
 	my $cno = $self->param('cno');
@@ -34,7 +34,7 @@ sub list {
 
 	my $par = {
 		mid    => $mid    && $self->quote($mid),
-		tid    => $tid    && $self->quote($tid),
+		ptid   => $ptid   && $self->quote($ptid),
 		cno    => $cno    && $self->quote($cno),
 		refnum => $refnum && $self->quote($refnum),
 		tsn    => $tsn    && $self->quote($tsn),
@@ -49,12 +49,13 @@ sub list {
 	my $sql       = '';
 	if ( $itype == 2 ) {
 		$sql = "SELECT
+	resp_code,
 	rev_flag,
 	mname,
     refnum,
     tsn,
     mid,
-    tid,
+    ptid,
     ptdt,
     tcode,
     cno,
@@ -64,12 +65,13 @@ sub list {
 FROM
     (
         SELECT
+        	resp_code,
         	rev_flag,
         	mname,
         	refnum,
         	tsn,
             mid,
-            tid,
+            ptid,
             ptdt,
             tcode,
             cno,
@@ -91,12 +93,13 @@ FROM
 	}
 	elsif ( $itype == 1 ) {
 		$sql = "SELECT
+	resp_code,
 	rev_flag,
 	mname,
     refnum,
     tsn,
     mid,
-    tid,
+    ptid,
     ptdt,
     tcode,
     cno,
@@ -106,12 +109,13 @@ FROM
 FROM
     (
         SELECT
+        	resp_code,
         	rev_flag,
         	mname,
         	refnum,
         	tsn,
             mid,
-            tid,
+            ptid,
             ptdt,
             tcode,
             cno,
@@ -133,13 +137,15 @@ FROM
 	}
 	elsif ( $itype == 0 ) {
 		$condition =~ s/^ and // if $condition;
+		$condition = 'where ' . $condition if $condition;
 		$sql = "SELECT
+	resp_code,
 	rev_flag,
 	mname,
     refnum,
     tsn,
     mid,
-    tid,
+    ptid,
     ptdt,
     tcode,
     cno,
@@ -149,12 +155,13 @@ FROM
 FROM
     (
         SELECT
+        	resp_code,
        		rev_flag,
         	mname,
 		    refnum,
 		    tsn,
             mid,
-            tid,
+            ptid,
             ptdt,
             tcode,
             cno,
@@ -162,7 +169,6 @@ FROM
             tamt
         FROM
             txn_log_cardsv
-        WHERE
             $condition
         order by ptdt desc)"
 		  ;

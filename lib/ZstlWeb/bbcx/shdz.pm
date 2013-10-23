@@ -73,12 +73,19 @@ sub list {
 	    dtl.tdt as tdt, bms_log.ctype as ctype, 
 	    dtl.ssn as ssn, bms_log.cno as cno,
 	    dtl.tcode as tcode, dtl.tamt as tamt,
-	    dtl.tamt - dtl.bj as mfee, dtl.bj as bj,
+	    dtl.mfee as mfee, dtl.bj as bj,
 	    bms_log.refnum as refnum
 		from dtl
 		join bms_log
 		on dtl.tdt = bms_log.tdt and dtl.ssn = bms_log.ssn $p->{condition}) ";
+	my $condition = $p->{condition};
+	$condition =~ s/^ and // if $condition;
+	$condition = 'where ' . $condition if $condition;
+	my $sql_sum =
+"select sum(tamt) as tamt, sum(mfee) as mfee, sum(bj) as bj from dtl $condition";
+	my $sum = $self->select($sql_sum);
 	my $data = $self->page_data( $sql, $page, $limit );
+	$data->{data}[0]{sum} = $sum;
 	$data->{success} = true;
 	$self->render( json => $data );
 }

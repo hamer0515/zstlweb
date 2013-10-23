@@ -48,6 +48,7 @@ sub startup {
 		hypnotoad => { listen => [ 'http://*:' . $config->{port} ] } );
 
 	# plugin
+	$self->plugin('RenderFile');
 	$self->plugin( Charset => { charset => 'utf-8' } );
 
 	# helper
@@ -99,7 +100,7 @@ sub _before_dispatch {
 
 	my $path = $self->req->url->path;
 	return 1 if $path =~ /^\/$/;                      # 登陆页面可以访问
-	return 1 if $path =~ /(js|jpg|gif|css|png|ico)$/; # 静态文件可以访问
+	return 1 if $path =~ /(js|jpg|gif|css|png|ico|xls)$/; # 静态文件可以访问
 	      # return 1 if $path =~ /html$/;              # login
 
 	my $sess = $self->session;
@@ -190,6 +191,8 @@ sub set_route {
 	  ->to( namespace => 'ZstlWeb::bbcx::frmx', action => 'list' );
 	$r->any('/frmx/detail')
 	  ->to( namespace => 'ZstlWeb::bbcx::frmx', action => 'detail' );
+	$r->any('/bbxz/download')
+	  ->to( namespace => 'ZstlWeb::bbcx::bbxz', action => 'download' );
 
 	# 交易查询
 	$r->any('/ssjycx/list')
@@ -199,8 +202,7 @@ sub set_route {
 	$r->any('/zhcx/list')
 	  ->to( namespace => 'ZstlWeb::zhgl::zhcx', action => 'list' );
 	$r->any('/zhcx/history')
-	  ->to( namespace => 'ZstlWeb::zhgl::zhcx', action => 'history' )
-	  ;
+	  ->to( namespace => 'ZstlWeb::zhgl::zhcx', action => 'history' );
 }
 
 1;
