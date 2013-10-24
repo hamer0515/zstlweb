@@ -17,11 +17,11 @@ sub list {
 
 	my $sql = '';
 
-	my $par = { mid => $mid };
+	my $par = { 'mcht_acct.mid' => $mid };
 
 	# 渠道
 	if ( $itype == 1 ) {
-		$par->{chnl_id} = $utype;
+		$par->{'mcht_acct.chnl_id'} = $utype;
 	}
 	elsif ( $itype == 2 ) {
 		$self->render( json => { success => 'forbidden' } );
@@ -29,7 +29,8 @@ sub list {
 	}
 	my $p         = $self->params($par);
 	my $condition = $p->{condition};
-	$condition =~ s/^ and // if $condition;
+
+	#	$condition =~ s/^ and // if $condition;
 
 	#	$condition = 'where ' . $condition if $condition;
 	$sql = "SELECT
@@ -53,6 +54,7 @@ FROM
         	mcht_inf
         ON
         	mcht_inf.mid = mcht_acct.mid $condition)";
+	warn $sql;
 	my $data = $self->page_data( $sql, $page, $limit );
 	$data->{success} = true;
 	$self->render( json => $data );

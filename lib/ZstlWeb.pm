@@ -48,7 +48,6 @@ sub startup {
 		hypnotoad => { listen => [ 'http://*:' . $config->{port} ] } );
 
 	# plugin
-	$self->plugin('RenderFile');
 	$self->plugin( Charset => { charset => 'utf-8' } );
 
 	# helper
@@ -99,9 +98,10 @@ sub _before_dispatch {
 	my $self = shift;
 
 	my $path = $self->req->url->path;
-	return 1 if $path =~ /^\/$/;                      # 登陆页面可以访问
-	return 1 if $path =~ /(js|jpg|gif|css|png|ico|xls)$/; # 静态文件可以访问
-	      # return 1 if $path =~ /html$/;              # login
+	return 1 if $path =~ /^\/$/;    # 登陆页面可以访问
+	return 1
+	  if $path =~ /(js|jpg|gif|css|png|ico)$/;    # 静态文件可以访问
+	     # return 1 if $path =~ /html$/;              # login
 
 	my $sess = $self->session;
 
@@ -114,6 +114,19 @@ sub _before_dispatch {
 		unless ( exists $sess->{uid} ) {
 			$self->redirect_to('/');
 			return;
+		}
+	}
+	if ( $path =~ /xls$/ ) {
+		my $utype = $sess->{utype};
+		my $itype = $sess->{itype};
+		my @p     = split '\/', $path;
+		if (   ( $itype == 1 && $p[3] eq 'chnl' && $p[4] == $utype )
+			|| ( $itype == 2 && $p[3] eq 'tech' && $p[4] == $utype ) )
+		{
+			return 1;
+		}
+		else {
+			$self->render( json => { success => 'forbidden' } );
 		}
 	}
 	my $uid  = $sess->{uid};
